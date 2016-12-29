@@ -1,0 +1,200 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-GB" xml:lang="en-GB">
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <title>dir.evolt.org</title>
+    <meta name="Copyright" content="&copy; evolt.org and its members" />
+    <meta name="Keywords" content="web, internet, design, technology, interface, multimedia, script, commentary, hardware, software, articles, news" />
+    <meta name="Description" content="A world community for web developers, evolt.org promotes the mutual free exchange of ideas, skills and experiences." />
+    <meta http-equiv="Content-Style-Type" content="text/css" />	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<base href="http://evolt.org/" />
+<style type="text/css" media="all">@import "http://evolt.org/misc/drupal.css";</style><style type="text/css">@import url(http://evolt.org/modules/codefilter/codefilter.css);</style>
+<style type="text/css">@import url(http://evolt.org/modules/project/project.css);</style>
+<link rel="stylesheet" href="http://planet.evolt.org/planet.css" type="text/css">
+
+    <!--    The following CSS is IE only, as per	 http://virtuelvis.com/archives/2004/02/css-ie-only    -->
+
+	<!--[if IE]>
+
+  		<link rel="stylesheet" href="themes/evolt/structure_ie.css" type="text/css" />
+	<![endif]-->
+    <style type="text/css" media="all">@import "themes/evolt/style.css";</style>
+    <!--    the following print CSS needs to be moved into the $styles php above - here for now for testing purposes   -->
+ 	<link rel="stylesheet" href="themes/evolt/print.css" media="print" type="text/css"/>
+	  </head>  <body >
+		<!-- start accessibility skip to content -->
+		<div id="access-skip" class="access">
+				<a href="/#main-page-content" accesskey="2">Skip to page content</a> or
+ 				<a href="/#accesskey-list" accesskey="0">skip to Accesskey List.</a>
+		</div>
+		<!-- end accessibility skip -->
+		<div id="header"><h2 class="access">Start of page header</h2>
+		  <a href="" title="Return to the home page" accesskey="1" ><img src="themes/evolt/evoltorg.gif" alt="evolt.org" title="Welcome to evolt.org" id="logo" /></a>
+		   <h2 class="access"><a name="other-sites">Other Fine Evolt.org Sites</a></h2>
+		   <ul id="sections">		   
+		    <li id="sectionwork"><a href="/" title="list and articles">Work</a>
+		      <p>list and articles</p>
+		    </li>
+		    <li id="sectiontest"><a href="http://browsers.evolt.org/" title="browser archive">Test</a>
+		      <p>browser archive</p>
+		    </li>
+		    <li id="sectiondonate"><a href="/help_support_evolt" title="keep evolt.org alive">Donate</a>
+		      <p>keep evolt.org alive</p>
+		    </li>
+		   </ul>
+		</div>
+     <form method="post" action="/search/node" id="searchform"> 
+				<fieldset>
+				  <legend>Search evolt.org</legend>
+				  <label for="searchbox" class="faux-legend">search:</label>
+				  <input type="text" name="edit[keys]" id="searchbox" size="12" maxlength="50" accesskey="4" value="" /><input type="submit" id="searchevolt" class="form-submit" name="op" value="Search" />	
+				</fieldset>
+     </form>
+ <form id="login">
+   <span style="weight: bold;">Last updated</span>: November 27, 2008 06:00 PM </form>
+<div id="content"><div id="channel">
+
+  <p class="work-title"><a href="/">Work</a></p>
+  <ul id="secondary">
+    <li><a href="http://lists.evolt.org/">Lists</a></li><li><a href="http://dir.evolt.org/">Directory</a></li><li><a href="/taxonomy/term/23">Jobs</a></li>
+  </ul>
+  <ul id="secondary-constants">
+    <li><a href="/faq" accesskey="5">FAQ</a></li>
+    <li><a href="/contact" accesskey="9">Contact</a></li>
+  </ul>
+</div>
+
+  <div class="sidebar" id="sidebar-left"><h2 class="access"><a name="content-categories">Navigation Starts</a></h2>
+
+    <!-- $Id: block.tpl.php,v 1.3 2005/02/01 19:06:25 neuro Exp $ -->
+<div class="block">
+  <h4>Article Categories</h4>
+  <div class="menu">
+
+<ul>
+<li class="leaf"><a href="backend" title="">Backend</a></li>
+<li class="leaf"><a href="code" title="">Code</a></li>
+<li class="leaf"><a href="commentary_and_society" title="">Commentary &amp; Society</a></li>
+<li class="leaf"><a href="community_news" title="">Community News</a></li>
+<li class="leaf"><a href="ia_usability" title="">IA/Usability</a></li>
+<li class="leaf"><a href="jobs" title="">Jobs</a></li>
+<li class="leaf"><a href="news" title="">News</a></li>
+
+<li class="leaf"><a href="reviews_and_links" title="">Reviews &amp; Links</a></li>
+<li class="leaf"><a href="site_development" title="">Site Development</a></li>
+<li class="leaf"><a href="software" title="">Software</a></li>
+<li class="leaf"><a href="suggestions" title="">Suggestions</a></li>
+<li class="leaf"><a href="visual_design" title="">Visual Design</a></li>
+
+</ul>
+</div></div>
+<div class="block">
+  <h4></h4>
+  <!-- Donations block for logged in members only-->
+
+<div id="donation">
+  <h3>
+    <a href="/help_support_evolt">Help Support evolt.org</a>
+  </h3>
+
+  <p>Evolt.org is an <strong>all volunteer</strong> organisation that relies on member support to survive and grow. <a href="/help_support_evolt">Find out</a> how you can help through:</p>
+  <ul>
+    <li><a href="/help_support_evolt#donations">Giving Money &raquo;</a></li>
+    <li><a href="/help_support_evolt#technical">Providing Mirror Servers &raquo;</a></li>
+
+    <li><a href="http://www.cafepress.com/evoltgear">Buying evolt.org merchandise &raquo;</a></li>
+    <li><a href="/help_support_evolt#knowledge">Contributing your knowledge and expertise  &raquo;</a></li>
+  </ul>
+  <form action="https://www.paypal.com/cgi-bin/webscr" method="post"><input type="hidden" name="cmd" value="_xclick" /><input type="hidden" name="business" value="give@evolt.org" /><input type="hidden" name="item_name" value="evolt.org's shameless tin cup" /><input type="hidden" name="item_number" value="1" /><input type="image" src="/files/paypalone.gif" border="0" name="submit" alt="Support evolt.org with your donation of any amount" width="97" height="31" /></form>
+  <form action="https://www.paypal.com/cgi-bin/webscr" method="post"><input type="hidden" name="cmd" value="_xclick-subscriptions" /><input type="hidden" name="business" value="give@evolt.org" /><input type="hidden" name="item_name" value="evolt.org: $15 monthly support" /><input type="hidden" name="item_number" value="15" /><input type="hidden" name="no_shipping" value="1" /><input type="hidden" name="return" value="http://www.evolt.org" /><input type="hidden" name="no_note" value="1" /><input type="hidden" name="currency_code" value="USD" /><input type="image" src="/files/paypal15.gif" border="0" name="submit" alt="Support evolt.org with your monthly $15 donation" width="97" height="31" /><input type="hidden" name="a3" value="15.00" /><input type="hidden" name="p3" value="1" /><input type="hidden" name="t3" value="M" /><input type="hidden" name="src" value="1" /><input type="hidden" name="sra" value="1" /></form>
+</div>
+
+<!-- Donations Block --></div>
+
+<div class="block">
+
+  <h4>Highest rated articles</h4>
+  <ul>
+<li><a href="/node/15118">Usable Forms (for an international audience)</a> (4.59)</li><li><a href="/node/60384">PHP Login System with Admin Features</a> (4.58)</li><li><a href="/node/60261">Where / What Vision Systems and Visual Design</a> (4.56)</li><li><a href="/node/2396">You Call <em>That</em> Web Site Testing?</a> (4.41)</li><li><a href="/node/55035">Dynamically Filtering Dropdown Lists in Javascript</a> (4.41)</li></ul></div>
+
+<div class="block">
+  <h4>Recent comments</h4>
+  <!-- $Id: item_list.tpl.php,v 1.6 2005/02/22 20:17:58 elfur Exp $ -->
+<div class="item-list"><ul><li><a href="node/60384#comment-62874">registration fails</a><br />7 hours 28 min ago</li><li><a href="node/60525#comment-62873">Dynamic Report Generation</a><br />13 hours 58 min ago</li><li><a href="node/60525#comment-62872">Spotted</a><br />14 hours 6 min ago</li><li><a href="node/60384#comment-62871">zip file shows &#039;page not found&#039;</a><br />15 hours 32 min ago</li><li><a href="node/60384#comment-62870">Thank you karpa-diem admin user is now registered</a><br />18 hours 15 min ago</li><li><a href="node/60384#comment-62869">mailer.php is missing ...</a><br />19 hours 46 min ago</li><li><a href="node/60384#comment-62868">cant download</a><br />22 hours 2 sec ago</li><li><a href="node/15177#comment-62867">Most &quot;Liquid&quot; pages are incomplete</a><br />1 day 1 hour ago</li><li><a href="node/60384#comment-62866">Registering admin user</a><br />1 day 8 hours ago</li><li><a href="node/60384#comment-62865">... is this possible?</a><br />1 day 9 hours ago</li></ul></div></div>
+
+  </div><!-- /sidebar left -->
+
+  <div class="sidebar" id="sidebar-right">
+
+<div class="block">
+  <h4>Our Mailing Lists</h4>
+
+  <p>Subscribe or change preferences:</p>
+<ul>
+<li><a href="http://lists.evolt.org/mailman/listinfo/thelist">thelist</a> <br />(ask questions)</li>
+<li><a href="http://lists.evolt.org/mailman/listinfo/thechat">thechat</a>  <br />(socialise)</li>
+<li><a href="http://lists.evolt.org/mailman/listinfo/theforum">theforum</a>  <br />(build evolt.org)</li>
+
+</ul></div>
+<!-- $Id: block.tpl.php,v 1.3 2005/02/01 19:06:25 neuro Exp $ -->
+<div class="block">
+  <h4>Our Directory of Links</h4>
+  <ul>
+<li><a href="http://dir.evolt.org/coding/">Coding</a></li>
+<li><a href="http://dir.evolt.org/community/">Community</a></li>
+<li><a href="http://dir.evolt.org/design/">Design</a></li>
+<li><a href="http://dir.evolt.org/distractions/">Distractions</a></li>
+<li><a href="http://dir.evolt.org/issues/">Issues</a></li>
+
+<li><a href="http://dir.evolt.org/os_specific/">OS Specific</a></li>
+<li><a href="http://dir.evolt.org/privacy_and_legal/">Privacy and Legal</a></li>
+<li><a href="http://dir.evolt.org/resources/">Resources</a></li>
+<li><a href="http://dir.evolt.org/tools/">Tools</a></li>
+<li><a href="http://dir.evolt.org/tutorials/">Tutorials</a></li>
+</ul></div>
+
+  </div><!-- /sidebar right -->
+
+<div class="main-content-node" id="content-both">
+
+	<h2 class="access"><a name="main-page-content">Main Page Content</a></h2>
+
+<!-- start main content -->
+<!-- begin content -->
+
+<h1>dir.evolt.org is no longer open.</h1>
+
+<div class="sidebar">
+<img src="images/logo.png" width="136" height="136" alt="">
+
+<!-- end main content -->
+
+<div style="clear: both"></div>
+
+</div><!-- mainContent -->
+
+  <div class="spacer"></div>
+</div><!-- end content -->
+<div id="footer">
+  <p>Evolt.org is a world community for web developers, promoting the mutual free exchange of ideas, skills and experiences.</p>
+</div>
+<!-- start accessibility info -->
+		<div id="access-info" class="access">
+  			<p class="access" ><a name="accesskey-list">The access keys for this page are</a>: ALT (Control on a Mac) plus:</p>
+				<ul class="access">
+					<li>1 links to the evolt.org home page.</li>
+					<li>plus 2 skips to the main content of the page.</li>
+					<li>plus 3 links to your user page.</li>
+					<li>plus 4 skips to the search form.</li>
+					<li>plus 5 links to site FAQs.</li>
+					<li>plus 6 skips to <a href="/#content-categories" accesskey="6">list of content categories</a> in this site.</li>
+					<li>plus 7 skips to the <a href="/#other-sites" accesskey="7">index of other sites in the evolt network</a>.</li>
+					<li>plus 9 links to the feedback page.</li>
+					<li>plus 0 will repeat this list.</li>
+				</ul>
+		</div><!-- end accessibility info -->
+<div id="printheader"><a href="/" title="evolt.org Home Page"><img src="themes/evolt/logo_print.gif" width="134" height="50" alt="evolt.org" border="0" align="left" hspace="10" /></a>Evolt.org is an all-volunteer resource for web developers made up of a discussion list, a browser archive, and member-submitted articles.  This article is the property of its author, please do not redistribute or use elsewhere without checking with the author.</div>
+</body>
+</html>
+

@@ -1,0 +1,6 @@
+AuthUserFile /store/host/dir.evolt.org/manage/.htpasswd
+AuthName admin
+AuthType Basic
+<Limit GET POST>
+require valid-user
+</Limit>

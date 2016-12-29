@@ -1,0 +1,9 @@
+.DS_Store
+*.swp
+~$*
+*~
+*.sql
+htaccess
+includes/directoryAdmin.php
+includes/evoltSQL_old.php
+includes/evoltSQL.php

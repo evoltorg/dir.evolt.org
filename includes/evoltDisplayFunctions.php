@@ -1,0 +1,893 @@
+<?
+
+function page_header($title="") {
+	global $db;
+	global $PHP_SELF;
+
+	// if title is an integer generate breadcrumbs style title
+	if (is_numeric($title)) {
+
+		// run a recursive query to generate breadcrumbs trail array
+		$db->get_ParentsInt($title);
+		$path = $db->TRAIL;
+		$title = "";
+		if(!empty($path)) {
+			// run through array to generate title string
+			while (list($key,$val) = each($path)) {
+				$CatName = stripslashes($val["CatName"]);
+				$title = " &gt; $CatName$title";
+			}
+			$title = "dir.evolt.org$title";
+		}
+		else $title = "";
+	}
+
+	// if title is blank use default title
+	if ($title == "") $title = "evolt.org Web Design Directory";
+
+	// print the page header
+	print <<<EOF
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<!--page_header-->
+<HTML lang=en-us><HEAD><TITLE>$title</TITLE>
+<META content="text/html; charset=windows-1252" http-equiv=Content-Type>
+<META 
+content="A world community for web developers, evolt.org promotes the mutual free exchange of ideas, skills and experiences." 
+lang="en-us" name="description">
+<meta name="copyright" content="1998-2002 evolt.org and its members">
+<META content=text/css http-equiv=Content-Style-Type>
+<META content=text/javascript http-equiv=Content-Script-Type>
+<META content=en-us http-equiv=Content-Language>
+
+<LINK href="/images/emerald.css" rel=STYLESHEET 
+type=text/css>
+<STYLE>
+<!--
+.top h3 { margin: 7px 0px 2px 0px; }
+-->
+</STYLE>
+</HEAD>
+<BODY bgColor=#cccccc text=#000000>
+EOF;
+
+// include header code
+include("/store/host/dir.evolt.org/includes/dsp_header.html");
+
+
+print <<<EOF
+<!-- # Close Top Navigation Tab --><!-- ## Start Content Table -->
+<!--end page_header-->
+EOF;
+}
+
+
+
+
+function breadcrumbs($location="") {
+
+	global $db;
+	global $PHP_SELF;
+
+	// if title is an integer generate breadcrumbs trail
+	if (is_numeric($location)) {
+
+		// run a recursive query to generate breadcrumbs trail array
+		$db->get_ParentsInt($location);
+		$path = $db->TRAIL;
+		if(!empty($path)) {
+			$location = "";
+			$iscurrent = TRUE;
+			// run through array to generate breadcrumbs string
+			while ( list ( $key,$val ) = each ($path)) {
+				$CatID		= stripslashes($val["CatID"]);
+				$CatName	= stripslashes($val["CatName"]);
+
+				if ($iscurrent) {
+					$location = " <strong>&#187;</strong> \n<strong>$CatName</strong>$location";
+				}
+				else {
+					// get array containing urlstring
+					$db->get_urlstringFromCatIDInt($CatID);
+					// format url string for inclusion
+					$urlstring = strtolower(str_replace(" ","_",implode("/",array_reverse($db->URLSTRING)) . "/"));
+					$location = " <strong>&#187;</strong> \n<a href=\"/$urlstring\"><strong>$CatName</strong></a>$location";
+				}
+				$iscurrent = FALSE;
+			}
+		} else {
+			$location = "";
+		}
+	}
+	else if ($location != "") {
+		// if location is not an integer, or blank format as a string
+		$location = "<strong>&#187;</strong> <strong>$location</strong>";
+	}
+
+
+	// print the breadcrumbs trail
+	print <<<EOF
+<TR><TD>
+<table width="100%" border=0 cellpadding=3 cellspacing=0><tbody><tr><td>
+<a href="$PHP_SELF"><strong>Top</strong></a> $location
+</td></tr></tbody></table>
+</TD></TR>
+<TR><TD bgcolor="#000000"><img src="/images/spacer.gif" width="1" height="1" alt=""></TD></TR>
+<TR><TD>
+EOF;
+}
+
+
+
+
+function print_error($type="") {
+
+	if ($type == "connection") {
+		print '
+<div class="message" align="center">
+<strong>
+Connection error message.
+</strong>
+</div>
+';
+	}
+	else if ($type == "noform") {
+		print '
+<div class="message" align="center">
+<strong>
+Invalid form request.
+</strong>
+</div>
+';
+	}
+	else {
+		print '
+<div class="message" align="center">
+<strong>
+Unspecified error message.
+</strong>
+</div>
+';
+
+	}
+}
+
+
+function suggest($post_variables="") {
+	global $db;
+	global $PHP_SELF;
+
+	if(!$db->suggest($post_variables)) {
+		print <<<EOF
+<div class="message" align="center"><strong>There was a problem submitting your link suggestion. <br>Please follow the instructions below to correct your entry.</strong></div><br>
+EOF;
+	// find the type of error
+	if (empty($post_variables["Url"])) {
+		$errorcodes[] = "NoUrlError";
+	}
+
+	if (empty($post_variables["LinkName"])) {
+		$errorcodes[] = "NoTitleError";
+	}
+
+	// check to see if the url is in the database
+	$sql = "select * from links where Url='" . $post_variables["Url"] . "'";
+
+	$urlexists = $db->select($sql);
+
+	if (!empty($urlexists[0])) {
+		$errorcodes[] = "ExistingURLError";
+	}
+
+	// redisplay the form with corrections required
+	print_form("link",$post_variables["CatID"],$post_variables,$errorcodes);
+	} else {
+
+		print <<<EOF
+<div class="message" align="center"><strong>Suggestion submitted for approval.</strong></div><br>
+EOF;
+//	mail("content@lists.evolt.org","New d.e.o. link!","A new link has been submitted to the evolt directory (from a category page).\n\nTo view/approve it go here:\n\nhttp://dir.evolt.org/manage/links.php\n","From:d.e.o. Robot <nobody@leo.evolt.org>");
+	subcategories($post_variables["CatID"]);
+	links($post_variables["CatID"]);
+	}
+}
+
+function suggestCat($post_variables="") {
+	global $db;
+	global $PHP_SELF;
+
+	if(!$db->suggestCat($post_variables)) {
+		print <<<EOF
+<div class="message" align="center"><strong>There was a problem submitting your category suggestion. <br>Please follow the instructions below to correct your entry.</strong></div><br>
+EOF;
+	// find the type of error
+	if (empty($post_variables["CatName"])) {
+		$errorcodes[] = "NoTitleError";
+	}
+
+	print_form("category",$post_variables["CatID"],$post_variables,$errorcodes);
+	} else {
+		print <<<EOF
+<div class="message" align="center"><strong>Suggestion submitted for approval.</strong></div><br>
+EOF;
+	mail("content@lists.evolt.org","New d.e.o. category!","A new category has been submitted to the evolt directory.\n\nTo view/approve it go here:\n\nhttp://dir.evolt.org/manage/categories.php\n","From:d.e.o. Robot <nobody@leo.evolt.org>");
+	subcategories($post_variables["CatID"]);
+	links($post_variables["CatID"]);
+	}
+}
+
+function print_info($info="") {
+	global $PHP_SELF;
+	if ($info == "about") {
+		include("/store/host/dir.evolt.org/includes/about.inc");
+	}
+	else if ($info == "guidelines") {
+		include("/store/host/dir.evolt.org/includes/guidelines.inc");
+	}
+	else if ($info == "suggest") {
+		include("/store/host/dir.evolt.org/includes/suggest.php");
+	}
+	else if ($info == "bookmarklet") {
+		include("/store/host/dir.evolt.org/includes/bookmarklet.inc");
+	}
+}
+
+function print_top() {
+	global $PHP_SELF;
+	global $db;
+
+	// number of subcategories to include for each category
+	$breaknum = 6;
+
+	// get all top level categories
+	$data = $db->get_Cats();
+
+	$totalCats = count($data);
+
+	if (!empty($data)) {
+		print "\n\n<table width=\"98%\" align=center border=0 cellpadding=3 cellspacing=0>\n";
+		for($i=0;$i<$totalCats;$i=$i+2) {
+			$CatID = stripslashes($data[$i]["CatID"]);
+
+			// get array containing urlstring
+			$db->get_urlstringFromCatIDInt($CatID);
+			// format url string for inclusion
+			$urlstring = strtolower(str_replace(" ","_",implode("/",array_reverse($db->URLSTRING)) . "/"));
+
+			$CatName = stripslashes($data[$i]["CatName"]);
+			$LinksInCat = $db->get_TotalLinksInCat_cnt($CatID);
+
+			if ($i+1<$totalCats) {
+				$CatID2 = stripslashes($data[$i+1]["CatID"]);
+
+				// get array containing urlstring
+				$db->get_urlstringFromCatIDInt($CatID2);
+				// format url string for inclusion
+				$urlstring2 = strtolower(str_replace(" ","_",implode("/",array_reverse($db->URLSTRING)) . "/"));
+
+				$CatName2 = stripslashes($data[$i+1]["CatName"]);
+				$LinksInCat2 = $db->get_TotalLinksInCat_cnt($CatID2);
+			}
+
+			print " <tr>\n";
+			print "  <td width=\"50%\" valign=\"top\">\n";
+
+			print "  <h3 style=\"margin: 0px;padding:0px;\"><a href=\"/$urlstring\">$CatName</a> ($LinksInCat)</h3>\n";
+
+			print "  </td>\n";
+			print "  <td width=\"50%\" valign=\"top\">\n";
+
+			if ($i+1<$totalCats) {
+				print "  <h3 style=\"margin: 0px;padding:0px;\"><a href=\"/$urlstring2\">$CatName2</a> ($LinksInCat2)</h3>\n";
+			}
+
+			print "  </td>\n";
+			print " </tr>\n";
+
+			print " <tr>\n";
+			print "  <td width=\"50%\" valign=\"top\">\n";
+
+			$subcats = $db->get_Cats($CatID);
+
+			if(!empty($subcats)) {
+				for ($j=0;$j<$breaknum;$j++) {
+					if ($j<count($subcats)) {
+						$SubCatID = stripslashes($subcats[$j]["CatID"]);
+
+						// get array containing urlstring
+						$db->get_urlstringFromCatIDInt($SubCatID);
+						// format url string for inclusion
+						$SubCaturlstring = strtolower(str_replace(" ","_",implode("/",array_reverse($db->URLSTRING)) . "/"));
+
+						$SubCatName = stripslashes($subcats[$j]["CatName"]);
+						print "  <a href=\"$SubCaturlstring\">$SubCatName</a>";
+						// print commas where appropriate
+						if ($j != $breaknum - 1 && $j < count($subcats)-1) print ", \n";
+					}
+				}
+				// print dots if subcategories are truncated
+				if ($j < count($subcats)) print "...";
+			}
+
+			print "  </td>\n";
+			print "  <td width=\"50%\" valign=\"top\">\n";
+
+
+			if ($i+1<$totalCats) {
+
+				$subcats = $db->get_Cats($CatID2);
+
+				if(!empty($subcats)) {
+					for ($j=0;$j<$breaknum;$j++) {
+						if ($j<count($subcats)) {
+							$SubCatID = stripslashes($subcats[$j]["CatID"]);
+
+							// get array containing urlstring
+							$db->get_urlstringFromCatIDInt($SubCatID);
+							// format url string for inclusion
+							$SubCaturlstring = strtolower(str_replace(" ","_",implode("/",array_reverse($db->URLSTRING)) . "/"));
+
+							$SubCatName = stripslashes($subcats[$j]["CatName"]);
+							print "  <a href=\"$SubCaturlstring\">$SubCatName</a>";
+							// print commas where appropriate
+							if ($j != $breaknum - 1 && $j < count($subcats)-1) print ", \n";
+						}
+					}
+					// print dots if subcategories are truncated
+					if ($j < count($subcats)) print "...";
+				}
+
+			}
+
+			print "  </td>\n";
+			print " </tr>\n";
+			print " <tr>\n  <td colspan=2><img src=\"/images/spacer.gif\" alt=\"\" width=\"1\" height=\"1\"></td>\n </tr>\n"; 
+		}
+		print "</table>\n\n";
+	}
+
+}
+
+function print_form($type="",$parent_cat="",$post_variables="",$invalid="") {
+	global $db;
+	global $PHP_SELF;
+
+	if("$parent_cat" == "top") { $parent_cat = 0; }
+	$CatName = stripslashes($db->get_CatNames($parent_cat));
+	if(empty($CatName)) { $CatName = "Top"; }
+
+	if ($type == "link" AND !empty($parent_cat)) {
+
+		if (empty($invalid)) {
+			$linkintro = "<div class=\"message\" align=\"center\"><strong>Add a link to: $CatName</strong></div><br>";
+			$linkintro .= "<p>";
+			$linkintro .= "To add a new link in the category <strong>$CatName</strong>, please fill in the form ";
+			$linkintro .= "below. To add a link to a different category, click on \"Suggest new link\" ";
+			$linkintro .= "at the bottom of the relevant category page.";
+			$linkintro .= "</p>";
+			$linkintro .= "<p>";
+			$linkintro .= "The Url and Title fields are required. A one line ";
+			$linkintro .= "description of the site is also appreciated. If this is your first ";
+			$linkintro .= "suggestion, please read the <a href=\"/info/guidelines\">submission ";
+			$linkintro .= "guidelines</a> before proceeding.";
+			$linkintro .= "</p>";
+		} else {
+			$linkintro = "";
+		}
+
+		if (empty($invalid)) $invalid[] = "";
+
+		if (in_array ("ExistingURLError", $invalid)) {
+			$sql = "select * from links where Url='" . ereg_replace("\"","&quot;",stripslashes($post_variables["Url"])) . "'";
+			$existingentry = $db->select($sql);
+			if (!$existingentry[0]["Approved"]) {
+				$urlErrorMessage = "A link to \"" . $existingentry[0]["LinkName"] . "\" with the same URL has already been suggested, but is currently awaiting approval. Please try suggesting a different link.";
+			}
+			else {
+				$sql2 = "select * from LinkCats where LinkID='" . $existingentry[0]["LinkID"] . "'";
+				$whichCats = $db->select($sql2);
+				$CatName = $db->get_CatNames($whichCats[0]["CatID"]);
+				$urlErrorMessage = "A link to \"" . $existingentry[0]["LinkName"] . "\" with the same URL already exists in the category <a href=\"$PHP_SELF?viewCat=" . $whichCats[0]["CatID"] . "\">$CatName</a>. Please try suggesting a different link.";
+			}
+			$ExistingURLError = "<tr><td align=right><img src=\"/images/alert.gif\" width=\"30\" height=\"30\" border=\"0\" alt=\"Warning!\"></td><td>$urlErrorMessage</td></tr>";
+		}
+		else {
+			$ExistingURLError = "";
+		}
+
+		if (in_array ("NoUrlError", $invalid)) {
+			$NoUrlError = "<tr><td align=right><img src=\"/images/alert.gif\" width=\"30\" height=\"30\" border=\"0\" alt=\"Warning!\"></td><td>You must enter a URL for the link!</td></tr>";
+		}
+		else {
+			$NoUrlError = "";
+		}
+
+		if (in_array ("NoTitleError", $invalid)) {
+			$NoTitleError = "<tr><td align=right><img src=\"/images/alert.gif\" width=\"30\" height=\"30\" border=\"0\" alt=\"Warning!\"></td><td>You must enter a title for the link!</td></tr>";
+		}
+		else {
+			$NoTitleError = "";
+		}
+
+		if (!empty($post_variables)) {
+			$CatID = ereg_replace("\"","&quot;",stripslashes($post_variables["CatID"]));
+			$Url = ereg_replace("\"","&quot;",stripslashes($post_variables["Url"]));
+			$LinkName = ereg_replace("\"","&quot;",stripslashes($post_variables["LinkName"]));
+			$Description = ereg_replace("\"","&quot;",stripslashes($post_variables["Description"]));
+			$SubmitName = ereg_replace("\"","&quot;",stripslashes($post_variables["SubmitName"]));
+			$SubmitEmail = ereg_replace("\"","&quot;",stripslashes($post_variables["SubmitEmail"]));
+		}
+		else {
+			$CatID = "";
+			$Url = "";
+			$LinkName = "";
+			$Description = "";
+			$SubmitName = "";
+			$SubmitEmail = "";
+		}
+
+		// print an add a link form
+		print <<<EOF
+$linkintro
+<form action="$PHP_SELF" method="post">
+<input type="hidden" name="CatID" value="$parent_cat">
+<table border="0" cellpadding="2" cellspacing="2">
+$ExistingURLError
+$NoUrlError
+<tr><td align="right"><strong style="color: red;">URL:</strong></td><td><input name="Url" size="40" VALUE="$Url"></td></tr>
+$NoTitleError
+<tr><td align="right"><strong style="color: red;">Title:</strong></td><td><input name="LinkName" size="40" value="$LinkName"></td></tr>
+<tr><td align="right"><strong>Description:</strong></td><td><textarea name="Description" rows="3" cols="40">$Description</textarea></td></tr>
+<tr><td align="right"><strong>Your Name:</strong></td><td><input name="SubmitName" size="40" value="$SubmitName"></td></tr>
+<tr><td align="right"><strong>Your Email:</strong></td><td><input name="SubmitEmail" size="40" value="$SubmitEmail"></td></tr>
+<tr><td></td><td><input type="submit" name="suggest" value="Submit Resource"></td></tr>
+</table>
+</form>
+EOF;
+	}
+	elseif ($type == "category" AND !empty($parent_cat)) {
+
+		if (empty($invalid)) {
+			$catintro = "<div class=\"message\" align=\"center\"><strong>Add a Sub Category to: $CatName</strong></div><br>";
+			$catintro .= "<p>";
+			$catintro .= "To add a sub category inside the category <strong>$CatName</strong>, please fill in ";
+			$catintro .= "the form below. To add a sub category to a different category, click on \"Suggest ";
+			$catintro .= "new category\" at the bottom of the relevant category page.";
+			$catintro .= "</p>";
+			$catintro .= "<p>";
+			$catintro .= "The Title field is required. A one line ";
+			$catintro .= "description of the category is also appreciated. If this is your first ";
+			$catintro .= "suggestion, please read the <a href=\"/info/guidelines\">submission ";
+			$catintro .= "guidelines</a> before proceeding.";
+			$catintro .= "</p>";
+		} else {
+			$catintro = "";
+		}
+
+		if (empty($invalid)) $invalid[] = "";
+
+		if (in_array ("NoTitleError", $invalid)) {
+			$NoTitleError = "<tr><td align=right><img src=\"/images/alert.gif\" width=\"30\" height=\"30\" border=\"0\" alt=\"Warning!\"></td><td>You must enter a title for the category!</td></tr>";
+		}
+		else {
+			$NoTitleError = "";
+		}
+
+		if (!empty($post_variables)) {
+			$CatID = ereg_replace("\"","&quot;",stripslashes($post_variables["CatID"]));
+			$CatName = ereg_replace("\"","&quot;",stripslashes($post_variables["CatName"]));
+			$CatDesc = ereg_replace("\"","&quot;",stripslashes($post_variables["CatDesc"]));
+			$CatSubmitName = ereg_replace("\"","&quot;",stripslashes($post_variables["CatSubmitName"]));
+			$CatSubmitEmail = ereg_replace("\"","&quot;",stripslashes($post_variables["CatSubmitEmail"]));
+		}
+		else {
+			$CatID = "";
+			$CatName = "";
+			$CatDesc = "";
+			$CatSubmitName = "";
+			$CatSubmitEmail = "";
+		}
+
+		// print an add a category form
+		print <<<EOF
+	$catintro
+
+	<form action="$PHP_SELF" method="post">
+	<input type="hidden" name="CatID" value="$parent_cat">
+	<table border="0" cellpadding="2" cellspacing="2">
+	$NoTitleError
+	<tr><td align="right" style="color: red;"><strong>Category Title:</strong></td><td><input name="CatName" size="40" value="$CatName"></td></tr>
+	<tr><td align="right"><strong>Description:</strong></td><td><textarea name="CatDesc" rows="3" cols="40">$CatDesc</textarea></td></tr>
+	<tr><td align="right"><strong>Your Name:</strong></td><td><input name="CatSubmitName" size="40" value="$CatSubmitName"></td></tr>
+	<tr><td align="right"><strong>Your Email:</strong></td><td><input name="CatSubmitEmail" size="40" value="$CatSubmitEmail"></td></tr>
+	<tr><td></td><td><input type="submit" name="suggestCat" value="Submit Resource"></td></tr>
+	</table>
+EOF;
+
+	}
+	else {
+		// print an error
+		print_error("noform");
+	}
+}
+
+
+
+
+function links($CatID="") {
+
+	global $PHP_SELF;
+	global $db;
+
+	$links	= $db->get_Links($CatID);
+
+	// do nothing if CatID is blank
+	if(!empty($CatID))
+	{
+		$currentID = $CatID;
+		$currentName = $db->get_CatNames($CatID);
+
+	} else {
+		return;
+	}
+
+	// print category links
+	if(!empty($links)) {
+
+		print "<table border=\"0\">\n";
+
+		while ( list ( $key,$val ) = each ($links)) {
+			$Url		= stripslashes($val["Url"]);
+			$LinkName	= stripslashes($val["LinkName"]);
+			$Desc		= stripslashes($val["Description"]);
+			print "<tr><td><img src=\"/images/spacer.gif\" width=\"19\" height=\"16\" border=\"0\" alt=\"\"></td>\n";
+			print "<td><a href=\"$Url\">$LinkName</a> <a href=\"$Url\" target=\"_blank\"></a> - $Desc</td></tr>";
+		}
+		print "</table>\n";
+
+	}
+
+}
+
+
+
+
+function subcategories($CatID="") {
+
+	global $PHP_SELF;
+	global $db;
+
+	$data	= $db->get_Cats($CatID);
+
+	// print top level categories if CatID is blank
+	if(!empty($CatID))
+	{
+		$currentID = $CatID;
+		$currentName = $db->get_CatNames($CatID);
+
+	} else {
+		print_top();
+		return;
+	}
+
+	// print any category description
+	$desc = $db->get_Desc($CatID);
+	print <<<EOF
+<table width="98%" border="0" cellpadding="4" cellspacing="0">
+<tr>
+	<!-- Page Title -->
+	<td class="pageTitle2" valign="middle" colspan="2"><h1>&nbsp;$currentName</h1></td>
+
+	<!-- /Page Title -->
+</tr>
+</table>
+EOF;
+	if (!empty($desc)) {
+		print "<p>\n$desc\n</p>\n\n";
+	}
+
+	// print subcategories
+	if(!empty($data)) {
+		print "<table border=\"0\">\n";
+		while ( list ( $key,$val ) = each ($data)) {
+			$CatID = stripslashes($val["CatID"]);
+			$CatName = stripslashes($val["CatName"]);
+			$LinksInCat = $db->get_TotalLinksInCat_cnt($CatID);
+			
+			// get array containing urlstring
+			$db->get_urlstringFromCatIDInt($CatID);
+			// format url string for inclusion
+			$urlstring = strtolower(str_replace(" ","_",implode("/",array_reverse($db->URLSTRING)) . "/"));
+			print "<tr><td><a href=\"/$urlstring\"><img src=\"/images/folder.gif\" width=\"19\" height=\"16\" alt=\"Subcategory\" border=\"0\"></a></td>\n";
+			print "<td><a href=\"/$urlstring\"><strong>$CatName</strong></a> ($LinksInCat)</td></tr>\n";
+		}
+		print "</table>\n";
+	}
+
+}
+
+
+function search_results($KeyWords="") {
+	global $db;
+	global $PHP_SELF;
+
+	print <<<EOF
+<table width="98%" border="0" cellpadding="4" cellspacing="0">
+
+<tr>
+<td align="right" class="pageTitle1" nowrap><h1>&nbsp;&nbsp;search&nbsp;</h1></td>
+<td class="pageTitle2"><h1>&nbsp;results</h1></td>
+</tr>
+EOF;
+
+	$hits = $db->search(stripslashes($KeyWords));
+	if((!$hits) or (empty($hits))) {
+		print <<<EOF
+<tr>
+<td valign="top" align="right" class="main" nowrap>&nbsp;</td>
+<td valign="top" class="main">
+<div class="message" align="center"><strong>No entries matched your search criteria.</strong></div><br>
+Try searching using a more general search term.<br><br>
+</td>
+</tr>
+
+EOF;
+	} else {
+
+
+	// re-form results array to a more useful form
+
+	// create new array
+	$search_out = array("LinkID" => array(),"CatID" => array(),"Url" => array(),"LinkName" => array(),"Description" => array());
+
+		// loop through matches
+		while ( list ($key,$hit) = each ($hits)) {
+			if(!empty($hit)) {
+				if (!in_array($hit["LinkID"],$search_out["LinkID"])) {
+					// new value, so append to $search_out
+					$search_out["CatID"][] = $hit["CatID"];
+					$search_out["LinkID"][] = $hit["LinkID"];
+					$search_out["Url"][] = $hit["Url"];
+					$search_out["LinkName"][] = $hit["LinkName"];
+					$search_out["Description"][] = $hit["Description"];
+				}
+				else {
+					// existing value
+
+					// find correct location
+					for ($j=0;$j<count($search_out["LinkID"]);$j++) {
+						if ($hit["LinkID"] == $search_out["LinkID"][$j]) $mark = $j;
+					}
+
+					// see if this slot is an array already
+					if (!is_array($search_out["CatID"][$mark])) {
+						// make it an array with existing value in slot zero
+						$tempvalue = $search_out["CatID"][$mark];
+						$search_out["CatID"][$mark] = array();
+						$search_out["CatID"][$mark][] = $tempvalue;
+					}
+
+					// add value to the array
+					array_push($search_out["CatID"][$mark],$hit["CatID"]);
+				}
+			}
+		}
+
+		$total = count($search_out["LinkID"]);
+		$title = "Search Results";
+		if ($total == 1) $msg = "Search returned $total match";
+		else $msg = "Search returned $total matches";
+
+		print "<tr><td>&nbsp;</td><td>\n";
+		print "<div class=\"message\" align=\"center\">\n";
+		print "<strong>\n";
+		print "$msg\n";
+		print "</strong>\n";
+		print "</div>\n";
+		print "<br>\n";
+		print "<table border=\"0\" cellpadding=\"4\">\n";
+
+		// output results
+		for ($i=0;$i<count($search_out["LinkID"]);$i++) {
+			$LinkName = $db->get_LinkName($search_out["LinkID"][$i]);
+
+			print "<tr><td><strong><a href=\"" . $search_out["Url"][$i] . "\">";
+			print stripslashes($LinkName) . "</a></strong>\n<br>\n";
+			print stripslashes($search_out["Description"][$i]) . "\n<br>\n";
+			print "<small>Found in: ";
+
+			if (!is_array($search_out["CatID"][$i])) {
+				// output single Category match
+				$CatName = $db->get_CatNames($search_out["CatID"][$i]);
+
+				// get array containing urlstring
+				$db->get_urlstringFromCatIDInt($search_out["CatID"][$i]);
+				// format url string for inclusion
+				$urlstring = strtolower(str_replace(" ","_",implode("/",array_reverse($db->URLSTRING)) . "/"));
+
+				echo "<a href=\"/$urlstring\">";
+				echo "$CatName";
+				echo "</a>\n<br>\n";
+			}
+			else {
+				// output multiple Category matches
+				$CatName = $db->get_CatNames($search_out["CatID"][$i][0]);
+
+				// get array containing urlstring
+				$db->get_urlstringFromCatIDInt($search_out["CatID"][$i][0]);
+				// format url string for inclusion
+				$urlstring = strtolower(str_replace(" ","_",implode("/",array_reverse($db->URLSTRING)) . "/"));
+
+				echo "<a href=\"/$urlstring\">";
+				echo $CatName;
+				echo "</a>";
+				for ($j=1;$j<count($search_out["CatID"][$i]);$j++) {
+					$CatName = $db->get_CatNames($search_out["CatID"][$i][$j]);
+
+					// get array containing urlstring
+					$db->get_urlstringFromCatIDInt($search_out["CatID"][$i][$j]);
+					// format url string for inclusion
+					$urlstring = strtolower(str_replace(" ","_",implode("/",array_reverse($db->URLSTRING)) . "/"));
+
+					echo " and ";
+					echo "<a href=\"/$urlstring\">";
+					echo $CatName;
+					echo "</a>";
+				}
+			}
+			echo "</small>\n</td></tr>\n\n";
+		}
+	print "</table><br><br>\n\n";
+
+
+	}
+
+
+	print <<<EOF
+<tr>
+<td align="right" class="pageTitle1" nowrap><h1>&nbsp;&nbsp;search&nbsp;</h1></td>
+<td class="pageTitle2"><h1>&nbsp;tips</h1></td>
+</tr>
+
+<tr>
+<td valign="top" align="right" class="main" nowrap>&nbsp;</td>
+<td valign="top" class="main">
+
+<h2>Including additional terms</h2>
+To require additional words in a search, use the AND operator or prefix the term with a + sign:
+<blockquote>
+<strong>css AND selector</strong> or <br>
+<strong>css +selector</strong>
+</blockquote>
+requires <strong>css</strong> and <strong>selector</strong> within a single entry to match.
+
+<br><br>
+
+<h2>Excluding terms</h2>
+To exclude words from a search, use the NOT operator or prefix the term with a - sign:
+<blockquote>
+<strong>browser NOT netscape</strong> or<br><strong>browser -netscape</strong>
+</blockquote>
+requires <strong>browser</strong> but not <strong>netscape</strong> within a single entry to match.
+<br><br>
+
+<h2>Quoting phrases</h2>
+To search for a specific phrase, enclose the phrase in double quotes:
+<blockquote>
+<strong>"PHP Manual"</strong>
+</blockquote>
+will match <strong>PHP Manual</strong> but not <strong>PHP</strong> or <strong>Manual</strong> individually.
+
+<br><br>
+
+</td>
+</tr>
+
+</table>
+EOF;
+
+}
+
+
+function options($choices="") {
+	global $PHP_SELF;
+	if (!empty($choices)) {
+		$choices_array = explode(",",$choices);
+		print "<br>\n";
+		print "<strong>Information</strong><br>\n";
+		if (in_array("about",$choices_array)) {
+			print "&#149; <a href=\"/info/about\" class=\"sidebar\">About</a><br>\n";
+		}
+
+		if (in_array("guidelines",$choices_array)) {
+			print "&#149; <a href=\"/info/guidelines\" class=\"sidebar\">Guidelines</a><br>\n";
+		}
+
+		if (in_array("bookmarklet",$choices_array)) {
+			print "&#149; <a href=\"/info/bookmarklet\" class=\"sidebar\">Bookmarklet</a><br>\n";
+		}
+
+	}
+	else {
+		print "&nbsp;";
+	}
+}
+
+
+function suggest_links($CatID="") {
+	global $PHP_SELF;
+
+	// print the suggest links
+	print <<<EOF
+<br>
+<strong>Submissions</strong><br>
+&#149; <a href="$PHP_SELF?add=$CatID" class="sidebar">Suggest a link</a><br>
+&#149; <a href="$PHP_SELF?addCat=$CatID" class="sidebar">Suggest new category</a><br>
+EOF;
+}
+
+
+function print_stats($CatID="") {
+	global $db;
+	$stats = $db->get_stats($CatID);
+	print "<br>\n";
+	print "<strong>dir.evolt.org</strong><br>\n";
+	print "Contains " . $stats[0] . " links in " . $stats[1] . " subcategories.";
+}
+
+function page_footer() {
+	// print the page footer
+	print <<<EOF
+<!--begin page_footer-->
+<!-- ## Start Footer Table -->
+EOF;
+
+// include html footer
+include("/store/host/dir.evolt.org/includes/dsp_footer.html");
+
+}
+
+function start_main() {
+	print <<<EOF
+
+<!--begin Start_main-->
+<TABLE align=center bgColor=#ffffff border=0 cellPadding=0 cellSpacing=0 
+class=blackSides width="98%">
+  <TBODY>
+  <TR>
+    <TD class=main vAlign=top width="75%"><!-- ## Insert Content --><!-- app_chooser --><!-- OK -->
+    <TABLE cellpadding=0 cellspacing=0 width="100%" border=0><TBODY>
+
+<!--end Start_main-->
+EOF;
+}
+
+function start_sidebar($search_field="") {
+	global $PHP_SELF;
+
+	$search_field = stripslashes($search_field);
+	$search_field = str_replace("\"","&quot;",$search_field);
+
+	print <<<EOF
+<!--begin start_sidebar-->
+</TD></TR></TBODY></TABLE>
+<!-- done --><!-- ## End Insert Content --></TD>
+    <TD class=border width="1%"><IMG alt="" height=400 
+      src="/images/spacer.gif" width=1></TD><!-- ## Start SideNav -->
+    <TD class=side vAlign=top width="23%">
+    </td></tr>
+    </table>
+<!--end start_sidebar-->
+EOF;
+}
+
+function end_sidebar() {
+	print <<<EOF
+<!--begin end_sidebar-->
+    </TD>
+    <TD class=side width="1%"><IMG alt="" height=1 
+      src="/images/spacer.gif" width=1></TD><!-- ## End SideNav --></TR></TBODY></TABLE><!-- ## Close Content Table -->
+<!--end end_sidebar-->
+EOF;
+}
+
+?>

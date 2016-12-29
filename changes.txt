@@ -1,0 +1,11 @@
+Martin Burns
+23 October 2006
+
+Copied suggest.php to suggest_old.php
+Commented out the sql inserts in original suggest.php
+Added comments in suggest.php to note this.
+
+Not entirely elegant (better: add user messages),
+but rn I'm not that bothered, with 60+ spam submissions
+each day.
+==============================================================================

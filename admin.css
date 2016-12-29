@@ -1,0 +1,140 @@
+
+body {
+	margin: 10px;
+	padding: 0px;
+	font: 13px Verdana,Arial,sans-serif;
+	color: #000;
+	background-color: #FFF;
+}
+
+.topband {
+	background-color: #69C;
+	margin: -10px;
+	margin-bottom: 0px;
+	border-bottom: 1px solid #669;
+	padding: 3px;
+	background-image: url("bg_lightblue_comp.jpg");
+	background-position: right;
+}
+
+.title {
+	color: #000;
+	font-family: Verdana,Arial,sans-serif;
+	margin: 0px;
+	margin-top: 3px;
+	margin-bottom: 5px;
+	font-size: 23px;
+}
+
+.form {
+	margin: 0px;
+}
+
+.textinput {
+	font-family: Arial,Helvetica,sans-serif;
+	width: 250px;
+	height: 22px;
+}
+
+.breadcrumbs {
+	background-color: #9CF;
+	margin: -10px;
+	margin-top: 0px;
+	margin-bottom: 0px;
+	border-bottom: 1px solid #669;
+	padding: 1px;
+	padding-left: 10px;
+}
+
+.smalllinks {
+	margin-right: -5px;
+	padding: 2px;
+	text-align: right;
+
+}
+
+a:link {
+	color: #03C;
+}
+
+a:visited {
+	color: #03C;
+}
+
+a:active {
+	color: #9CF;
+}
+
+a:hover {
+
+}
+
+.breadcrumbs a {
+	text-decoration: none;
+	font-weight: bold;
+}
+
+.breadcrumbs a:hover {
+	color: #009;
+}
+
+.breadcrumbs a:active, .cats a:active {
+	color: #CFF;
+}
+
+.message {
+	color: black;
+	background-color: #FF6;
+	border: 1px solid #669;
+	padding: 5px;
+	width: 300px;
+	/* IE5 won't center this box due to bug in margin: auto; */
+	margin-left: auto;
+	margin-right: auto;
+}
+
+ul {
+	margin-top: 2px;
+	margin-bottom: 2px;
+}
+
+ul li {
+	/* Set default margins to zero for Opera */
+	margin: 0px;
+}
+
+
+.cats {
+	background-color: #9CF;
+	border: 1px solid #669;
+	padding: 5px;
+	width: 170px;
+	float: left;
+}
+
+h2.subcats {
+	font-family: Verdana,Arial,sans-serif;
+	font-size: 13px;
+	font-weight: bold;
+	border-bottom: 1px solid #669;
+	background-color: #69F;
+	margin: -5px;
+	margin-bottom: 0px;
+	padding: 1px;
+	padding-left: 3px;
+}
+
+/* IE5 has some problems indenting correctly around .cats box */
+.links {
+	margin-left: 200px;
+	margin-right: 20px;
+}
+
+
+h2 {
+	margin-top: 0px;
+	margin-bottom: 5px;
+	font-family: Verdana,Arial,sans-serif;
+	font-size: 18px;
+}
+

@@ -1,0 +1,157 @@
+<?
+//echo "<h3>Sorry, there are a few problems with the directory right now. Hopefully they should be fixed soon</h3>";
+
+include("includes/evoltSQL.php");
+include("includes/evoltDisplayFunctions.php");
+include("includes/evoltSearch.php");
+
+$db = new MySQL;
+$dblink = $db->init();
+
+// convert urlstring into the correct category
+if (!empty($urlstring)) {
+
+	// get the last category in the url string
+	$array = explode("/", $urlstring);
+	do {
+	  $last_cat = array_pop($array);
+	} while ($last_cat == "");
+
+	// replace underscores with spaces and trim extra whitespace
+	$last_cat = trim(str_replace("_"," ",$last_cat));
+
+	$sql = "select CatID from Categories where CatName='$last_cat'";
+	$results = $db->select($sql,$dblink);
+	if (!empty($results[0]["CatID"])) {
+		$viewCat = $results[0]["CatID"];
+	}
+}
+
+if (!empty($viewCat)) {
+	$urlstring = $db->get_urlstringFromCatID($viewCat);
+}
+
+///////////////////////////////////////////////////////////////
+// Sets the display variables based upon existing variables  //
+///////////////////////////////////////////////////////////////
+
+if (!$dblink) {
+	// error during connection to database
+
+	$page_title		= "Connection Failure - evolt.org Web Design Directory";
+	$page_breadcrumbs	= "Connection Failure";
+	$page_error_type	= "connection";
+//	$page_options		= "about,guidelines,bookmarklet";
+	$page_options           = "about,guidelines";
+
+}
+else if (!empty($add)) {
+	// "add a link" page
+
+	$page_title		= "Add a link - evolt.org Web Design Directory";
+	$page_breadcrumbs	= "Add a link";
+	$page_form_type		= "link";
+	$page_form_category	= $add;
+//	$page_options		= "about,guidelines,bookmarklet";
+        $page_options           = "about,guidelines";
+
+}
+else if (!empty($addCat)) {
+	// "add a category" page
+
+	$page_title		= "Add a category - evolt.org Web Design Directory";
+	$page_breadcrumbs	= "Add a category";
+	$page_form_type		= "category";
+	$page_form_category	= $addCat;
+	//$page_options		= "about,guidelines,bookmarklet";
+	        $page_options           = "about,guidelines";
+
+}
+else if (!empty($suggest)) {
+	// "suggest a link" confirmation page
+
+	$page_title		= $HTTP_POST_VARS["CatID"];
+	$page_breadcrumbs	= $HTTP_POST_VARS["CatID"];
+	$page_suggest		= $HTTP_POST_VARS;
+//      $page_options           = "about,guidelines,bookmarklet";
+        $page_options           = "about,guidelines";
+//	$page_suggest_links	= $HTTP_POST_VARS["CatID"];
+
+}
+else if (!empty($suggestCat)) {
+	// "suggest a category" confirmation page
+
+	$page_title		= $HTTP_POST_VARS["CatID"];
+	$page_breadcrumbs	= $HTTP_POST_VARS["CatID"];
+	$page_suggestCat	= $HTTP_POST_VARS;
+//      $page_options           = "about,guidelines,bookmarklet";
+        $page_options           = "about,guidelines";
+//	$page_suggest_links	= $HTTP_POST_VARS["CatID"];
+}
+else if (!empty($KeyWords)) {
+	// display search results page
+
+	$page_title		= "Search results for \"$KeyWords\" - evolt.org Web Design Directory";
+	$page_breadcrumbs	= "Search Results";
+	$page_search_results	= $KeyWords;
+//      $page_options           = "about,guidelines,bookmarklet";
+        $page_options           = "about,guidelines";
+
+}
+else if (!empty($Info)) {
+	// display information page
+
+	$page_title		= "$Info - evolt.org Web Design Directory";
+	$page_breadcrumbs	= $Info;
+	$page_print_info	= $Info;
+	//      $page_options           = "about,guidelines,bookmarklet";
+	        $page_options           = "about,guidelines";
+
+}
+else if (!empty($viewCat)) {
+	// display a category page
+
+	$page_title		= $viewCat;
+	$page_breadcrumbs	= $viewCat;
+	$page_subcategories	= $viewCat;
+	$page_links		= $viewCat;
+//	$page_suggest_links	= $viewCat;
+//      $page_options           = "about,guidelines,bookmarklet";
+        $page_options           = "about,guidelines";
+}
+else {
+	// display the top level page
+	$page_title		= "evolt.org Web Design Directory";
+//      $page_options           = "about,guidelines,bookmarklet";
+        $page_options           = "about,guidelines";
+	$page_stats		= TRUE;
+	$page_top		= TRUE;
+}
+
+////////////////////////////////////////////////////////////
+// The following code generates the required page         //
+////////////////////////////////////////////////////////////
+
+if (empty($page_search_results)) { $page_search_results=""; }
+if (empty($page_breadcrumbs)) { $page_breadcrumbs=""; }
+if (empty($page_error_type)) { $page_error_type=""; }
+if (empty($page_form_type)) { $page_form_type=""; }
+if (empty($page_suggest)) { $page_suggest=""; }
+if (empty($page_suggestCat)) { $page_suggestCat=""; }
+if (empty($page_subcategories)) { $page_subcategories=""; }
+if (empty($page_links)) { $page_links=""; }
+if (empty($page_print_info)) { $page_print_info=""; }
+if (empty($page_suggest_links)) { $page_suggest_links=""; }
+if (empty($page_top)) { $page_top=""; }
+if (empty($page_stats)) { $page_stats=FALSE; }
+
+
+page_header($page_title);
+
+start_main();
+echo "<br /><h3>&nbsp;The evolt.org directory is now closed.</h3>";
+start_sidebar();
+end_sidebar();
+
+page_footer();
+?>
