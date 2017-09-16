@@ -3,7 +3,7 @@
 // Copyright (c) 1999-2013 Adrian Roselli, William Anderson
 ?>
 
-<a id="back-to-top" href="#" title="Back to top"><i class="icon-angle-up"></i></a>
+<a id="back-to-top" href="#" title="Back to top"><i class="fa fa-angle-up"></i></a>
 
 <footer id="footer" role="contentinfo">
 <div class="wrapper">
