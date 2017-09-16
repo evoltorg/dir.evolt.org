@@ -7,3 +7,5 @@ htaccess
 includes/directoryAdmin.php
 includes/evoltSQL_old.php
 includes/evoltSQL.php
+old_includes
+old_manage
